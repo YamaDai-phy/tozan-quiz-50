@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,viewport-fit=cover"
+    />
+    <title>登山用語クイズ 50</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main class="app">
+      <header class="topbar">
+        <button id="closeBtn" class="icon-btn" aria-label="戻る">×</button>
+        <div class="progress-wrap">
+          <div id="progress" class="progress"></div>
+        </div>
+        <button id="menuBtn" class="icon-btn" aria-label="メニュー">•••</button>
+      </header>
+
+      <section id="quizScreen">
+        <div class="counter"><span id="current">1</span> / 50</div>
+        <div class="card">
+          <div id="word" class="word">アイゼン</div>
+          <button id="bookmark" class="bookmark" aria-label="この問題を記録">
+            ☆
+          </button>
+        </div>
+
+        <div id="feedback" class="feedback" aria-live="polite"></div>
+        <div id="choices" class="choices"></div>
+        <button id="nextBtn" class="next" hidden>次の問題 →</button>
+      </section>
+
+      <section id="resultScreen" hidden>
+        <div class="result-card">
+          <div class="result-label">QUIZ COMPLETE</div>
+          <div id="score" class="score">0 / 50</div>
+          <div id="rank" class="rank"></div>
+          <p id="resultText"></p>
+          <button id="retryBtn" class="primary">もう一度挑戦</button>
+          <button id="reviewBtn" class="secondary">間違えた問題を復習</button>
+        </div>
+      </section>
+    </main>
+    <script src="questions.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
