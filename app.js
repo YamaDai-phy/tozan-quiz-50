@@ -1,4 +1,13 @@
-const state = { questions: [], index: 0, score: 0, answered: false, wrong: [], bookmarks: new Set(), courseCount: 0, selectedCourse: 0 };
+const state = {
+  questions: [],
+  index: 0,
+  score: 0,
+  answered: false,
+  wrong: [],
+  bookmarks: new Set(),
+  courseCount: 0,
+  selectedCourse: 0,
+};
 const $ = (id) => document.getElementById(id);
 const shuffle = (items) => [...items].sort(() => Math.random() - 0.5);
 const HISTORY_KEY = "tozan-quiz-history";
@@ -13,10 +22,12 @@ function showHome() {
 
 function start(courseCount, source = QUESTIONS) {
   const pool = shuffle(source);
-  state.questions = pool.slice(0, Math.min(courseCount, pool.length)).map((q) => {
-    const choices = shuffle(q.choices);
-    return { ...q, choices, answerIndex: choices.indexOf(q.answer) };
-  });
+  state.questions = pool
+    .slice(0, Math.min(courseCount, pool.length))
+    .map((q) => {
+      const choices = shuffle(q.choices);
+      return { ...q, choices, answerIndex: choices.indexOf(q.answer) };
+    });
   state.courseCount = state.questions.length;
   state.index = 0;
   state.score = 0;
@@ -35,7 +46,8 @@ function render() {
   if (!q) return finish();
   state.answered = false;
   $("current").textContent = state.index + 1;
-  $("progress").style.width = `${((state.index + 1) / state.questions.length) * 100}%`;
+  $("progress").style.width =
+    `${((state.index + 1) / state.questions.length) * 100}%`;
   $("word").textContent = q.word;
   $("bookmark").textContent = state.bookmarks.has(q.word) ? "★" : "☆";
   $("bookmark").classList.toggle("active", state.bookmarks.has(q.word));
@@ -63,16 +75,33 @@ function answer(selected) {
   });
   if (selected === q.answerIndex) state.score++;
   else state.wrong.push(q);
-  setTimeout(() => { state.index++; render(); }, selected === q.answerIndex ? 500 : 1400);
+  setTimeout(
+    () => {
+      state.index++;
+      render();
+    },
+    selected === q.answerIndex ? 500 : 1400,
+  );
 }
 
 function getHistory() {
-  try { return JSON.parse(localStorage.getItem(HISTORY_KEY)) || []; } catch { return []; }
+  try {
+    return JSON.parse(localStorage.getItem(HISTORY_KEY)) || [];
+  } catch {
+    return [];
+  }
 }
 
 function saveResult() {
-  const record = { score: state.score, total: state.questions.length, date: new Date().toLocaleDateString("ja-JP") };
-  localStorage.setItem(HISTORY_KEY, JSON.stringify([record, ...getHistory()].slice(0, 8)));
+  const record = {
+    score: state.score,
+    total: state.questions.length,
+    date: new Date().toLocaleDateString("ja-JP"),
+  };
+  localStorage.setItem(
+    HISTORY_KEY,
+    JSON.stringify([record, ...getHistory()].slice(0, 8)),
+  );
 }
 
 function finish() {
@@ -80,8 +109,17 @@ function finish() {
   $("resultScreen").hidden = false;
   $("score").textContent = `${state.score} / ${state.questions.length}`;
   const rate = state.score / state.questions.length;
-  $("rank").textContent = rate === 1 ? "🏆 完全制覇！" : rate >= 0.8 ? "🔥 上級登山家レベル" : rate >= 0.6 ? "⛰️ もう一歩！" : "📚 復習して再挑戦！";
-  $("resultText").textContent = state.wrong.length ? `あとで「間違えた問題を復習」から ${state.wrong.length} 問をやり直せます。` : "すべて正解しました！";
+  $("rank").textContent =
+    rate === 1
+      ? "🏆 完全制覇！"
+      : rate >= 0.8
+        ? "🔥 上級登山家レベル"
+        : rate >= 0.6
+          ? "⛰️ もう一歩！"
+          : "📚 復習して再挑戦！";
+  $("resultText").textContent = state.wrong.length
+    ? `あとで「間違えた問題を復習」から ${state.wrong.length} 問をやり直せます。`
+    : "すべて正解しました！";
   $("reviewBtn").hidden = !state.wrong.length;
   saveResult();
 }
@@ -90,19 +128,33 @@ function renderHistory() {
   const records = getHistory();
   $("historyEmpty").hidden = records.length > 0;
   $("clearHistoryBtn").hidden = records.length === 0;
-  $("historyList").innerHTML = records.map((record) => `<li><span>${record.date}</span><strong>${record.score} / ${record.total}</strong></li>`).join("");
+  $("historyList").innerHTML = records
+    .map(
+      (record) =>
+        `<li><span>${record.date}</span><strong>${record.score} / ${record.total}</strong></li>`,
+    )
+    .join("");
 }
 
-document.querySelectorAll(".course").forEach((button) => button.onclick = () => {
-  state.selectedCourse = Number(button.dataset.count);
-  document.querySelectorAll(".course").forEach((course) => course.classList.toggle("selected", course === button));
-  $("startBtn").disabled = false;
-  $("startBtn").textContent = `${state.selectedCourse}問で開始する`;
-});
+document.querySelectorAll(".course").forEach(
+  (button) =>
+    (button.onclick = () => {
+      state.selectedCourse = Number(button.dataset.count);
+      document
+        .querySelectorAll(".course")
+        .forEach((course) =>
+          course.classList.toggle("selected", course === button),
+        );
+      $("startBtn").disabled = false;
+      $("startBtn").textContent = `${state.selectedCourse}問で開始する`;
+    }),
+);
 $("startBtn").onclick = () => start(state.selectedCourse);
 $("bookmark").onclick = () => {
   const word = state.questions[state.index].word;
-  state.bookmarks.has(word) ? state.bookmarks.delete(word) : state.bookmarks.add(word);
+  state.bookmarks.has(word)
+    ? state.bookmarks.delete(word)
+    : state.bookmarks.add(word);
   render();
 };
 $("retryBtn").onclick = () => start(state.courseCount);
@@ -110,5 +162,8 @@ $("reviewBtn").onclick = () => start(state.wrong.length, state.wrong);
 $("homeBtn").onclick = showHome;
 $("closeBtn").onclick = showHome;
 $("menuBtn").onclick = showHome;
-$("clearHistoryBtn").onclick = () => { localStorage.removeItem(HISTORY_KEY); renderHistory(); };
+$("clearHistoryBtn").onclick = () => {
+  localStorage.removeItem(HISTORY_KEY);
+  renderHistory();
+};
 showHome();
