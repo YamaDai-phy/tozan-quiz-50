@@ -7,6 +7,8 @@ const state = {
   bookmarks: new Set(),
   courseCount: 0,
   selectedCourse: 0,
+  countdownEnabled: false,
+  timerFrame: 0,
 };
 const $ = (id) => document.getElementById(id);
 const shuffle = (items) => [...items].sort(() => Math.random() - 0.5);
@@ -24,6 +26,7 @@ function fitWordOnOneLine() {
 }
 
 function showHome() {
+  stopTimer();
   $("homeScreen").hidden = false;
   $("topbar").hidden = true;
   $("quizScreen").hidden = true;
@@ -58,8 +61,6 @@ function render() {
   if (!q) return finish();
   state.answered = false;
   $("current").textContent = state.index + 1;
-  $("progress").style.width =
-    `${((state.index + 1) / state.questions.length) * 100}%`;
   $("word").textContent = q.word;
   requestAnimationFrame(fitWordOnOneLine);
   $("bookmark").textContent = state.bookmarks.has(q.word) ? "★" : "☆";
@@ -73,11 +74,36 @@ function render() {
     button.onclick = () => answer(i);
     choices.appendChild(button);
   });
+  startTimer();
+}
+
+function stopTimer() {
+  cancelAnimationFrame(state.timerFrame);
+  state.timerFrame = 0;
+}
+
+function startTimer() {
+  stopTimer();
+  $("timerWrap").hidden = !state.countdownEnabled;
+  $("timerLabel").hidden = !state.countdownEnabled;
+  if (!state.countdownEnabled) return;
+  const duration = 20000;
+  const startedAt = performance.now();
+  const tick = (now) => {
+    if (state.answered) return;
+    const remaining = Math.max(0, duration - (now - startedAt));
+    $("progress").style.width = `${(remaining / duration) * 100}%`;
+    $("timerLabel").textContent = `残り${Math.ceil(remaining / 1000)}秒`;
+    if (remaining === 0) answer(-1);
+    else state.timerFrame = requestAnimationFrame(tick);
+  };
+  state.timerFrame = requestAnimationFrame(tick);
 }
 
 function answer(selected) {
   if (state.answered) return;
   state.answered = true;
+  stopTimer();
   const q = state.questions[state.index];
   const buttons = [...document.querySelectorAll(".choice")];
   buttons.forEach((button, i) => {
@@ -194,6 +220,16 @@ document.querySelectorAll(".course").forEach(
       $("startBtn").textContent = `${state.selectedCourse}問で開始する`;
     }),
 );
+document.querySelectorAll(".timer-option").forEach((button) => {
+  button.onclick = () => {
+    state.countdownEnabled = button.dataset.timer === "on";
+    document.querySelectorAll(".timer-option").forEach((option) => {
+      const selected = option === button;
+      option.classList.toggle("selected", selected);
+      option.setAttribute("aria-pressed", selected);
+    });
+  };
+});
 $("startBtn").onclick = () => start(state.selectedCourse);
 $("weakStartBtn").onclick = () => {
   const weakWords = new Set(getWeakWords());

@@ -8,6 +8,7 @@
     />
     <title>登山用語クイズ</title>
     <link rel="stylesheet" href="style.css" />
+    <link rel="icon" href="icons/icon.svg" type="image/svg+xml" />
   </head>
   <body>
     <main class="app">
@@ -25,6 +26,11 @@
             <button class="course" data-count="50"><strong>50問</strong><span>腕試し</span></button>
             <button class="course" data-count="133"><em>おすすめ</em><strong>全133問</strong><span>完全制覇に挑戦</span></button>
           </div>
+          <div class="timer-setting" role="group" aria-labelledby="timerTitle">
+            <span id="timerTitle">カウントダウン</span>
+            <button class="timer-option selected" data-timer="off" aria-pressed="true">なし</button>
+            <button class="timer-option" data-timer="on" aria-pressed="false">20秒</button>
+          </div>
           <button id="startBtn" class="primary start-btn" disabled>出題数を選んで開始</button>
           <button id="weakStartBtn" class="secondary weak-start" disabled>苦手問題を復習（0問）</button>
         </section>
@@ -37,9 +43,10 @@
 
       <header id="topbar" class="topbar" hidden>
         <button id="closeBtn" class="icon-btn" aria-label="戻る">×</button>
-        <div class="progress-wrap">
+        <div id="timerWrap" class="progress-wrap" hidden>
           <div id="progress" class="progress"></div>
         </div>
+        <span id="timerLabel" class="timer-label" hidden>残り20秒</span>
         <button id="menuBtn" class="icon-btn" aria-label="メニュー">•••</button>
       </header>
       <section id="quizScreen" hidden>
