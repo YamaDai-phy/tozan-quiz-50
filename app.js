@@ -1,4 +1,4 @@
-const state = { questions: [], index: 0, score: 0, answered: false, wrong: [], bookmarks: new Set(), courseCount: 0 };
+const state = { questions: [], index: 0, score: 0, answered: false, wrong: [], bookmarks: new Set(), courseCount: 0, selectedCourse: 0 };
 const $ = (id) => document.getElementById(id);
 const shuffle = (items) => [...items].sort(() => Math.random() - 0.5);
 const HISTORY_KEY = "tozan-quiz-history";
@@ -63,7 +63,7 @@ function answer(selected) {
   });
   if (selected === q.answerIndex) state.score++;
   else state.wrong.push(q);
-  setTimeout(() => { state.index++; render(); }, selected === q.answerIndex ? 120 : 1400);
+  setTimeout(() => { state.index++; render(); }, selected === q.answerIndex ? 500 : 1400);
 }
 
 function getHistory() {
@@ -93,7 +93,13 @@ function renderHistory() {
   $("historyList").innerHTML = records.map((record) => `<li><span>${record.date}</span><strong>${record.score} / ${record.total}</strong></li>`).join("");
 }
 
-document.querySelectorAll(".course").forEach((button) => button.onclick = () => start(Number(button.dataset.count)));
+document.querySelectorAll(".course").forEach((button) => button.onclick = () => {
+  state.selectedCourse = Number(button.dataset.count);
+  document.querySelectorAll(".course").forEach((course) => course.classList.toggle("selected", course === button));
+  $("startBtn").disabled = false;
+  $("startBtn").textContent = `${state.selectedCourse}問で開始する`;
+});
+$("startBtn").onclick = () => start(state.selectedCourse);
 $("bookmark").onclick = () => {
   const word = state.questions[state.index].word;
   state.bookmarks.has(word) ? state.bookmarks.delete(word) : state.bookmarks.add(word);

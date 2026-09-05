@@ -94,7 +94,10 @@ button {
 .course strong { display: block; font-size: 22px; }
 .course span { display: block; margin-top: 5px; color: var(--muted); font-size: 14px; }
 .course.featured { border-color: var(--accent); background: #3d3025; }
+.course.selected { border-color: var(--accent); background: #4b3524; box-shadow: 0 0 0 2px #ff8a2244; }
 .course:active { transform: scale(.98); }
+.start-btn { margin-top: 16px; }
+.start-btn:disabled { cursor: not-allowed; opacity: .45; }
 .section-heading { display: flex; justify-content: space-between; align-items: baseline; }
 .history-empty { color: var(--muted); line-height: 1.6; }
 .history-list { list-style: none; padding: 0; margin: 0; }
