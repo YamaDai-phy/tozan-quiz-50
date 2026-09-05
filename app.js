@@ -17,6 +17,7 @@ function start(qs = QUESTIONS) {
   state.score = 0;
   state.answered = false;
   state.wrong = [];
+  $("total").textContent = state.questions.length;
   $("quizScreen").hidden = false;
   $("resultScreen").hidden = true;
   render();
@@ -95,5 +96,5 @@ $("closeBtn").onclick = () => {
   if (confirm("クイズを終了しますか？")) location.reload();
 };
 $("menuBtn").onclick = () =>
-  alert("50問をランダム出題します。☆を押すと問題を記録できます。");
+  alert(`${QUESTIONS.length}問をランダム出題します。☆を押すと問題を記録できます。`);
 start();
