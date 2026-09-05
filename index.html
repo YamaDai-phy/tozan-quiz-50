@@ -11,14 +11,36 @@
   </head>
   <body>
     <main class="app">
-      <header class="topbar">
+      <section id="homeScreen" class="home-screen">
+        <div class="home-hero">
+          <span class="eyebrow">MOUNTAIN WORDS</span>
+          <h1>登山用語クイズ</h1>
+          <p>133語から選んで、山の言葉を身につけよう。</p>
+        </div>
+        <section class="home-panel" aria-labelledby="courseTitle">
+          <h2 id="courseTitle">出題数を選ぶ</h2>
+          <div class="course-grid">
+            <button class="course" data-count="10"><strong>10問</strong><span>すきま時間に</span></button>
+            <button class="course" data-count="25"><strong>25問</strong><span>しっかり練習</span></button>
+            <button class="course" data-count="50"><strong>50問</strong><span>腕試し</span></button>
+            <button class="course featured" data-count="133"><strong>全133問</strong><span>完全制覇に挑戦</span></button>
+          </div>
+        </section>
+        <section class="history-panel" aria-labelledby="historyTitle">
+          <div class="section-heading"><h2 id="historyTitle">これまでの結果</h2><button id="clearHistoryBtn" class="text-btn" hidden>消去</button></div>
+          <div id="historyEmpty" class="history-empty">まだ記録がありません。クイズを始めてみよう！</div>
+          <ol id="historyList" class="history-list"></ol>
+        </section>
+      </section>
+
+      <header id="topbar" class="topbar" hidden>
         <button id="closeBtn" class="icon-btn" aria-label="戻る">×</button>
         <div class="progress-wrap">
           <div id="progress" class="progress"></div>
         </div>
         <button id="menuBtn" class="icon-btn" aria-label="メニュー">•••</button>
       </header>
-      <section id="quizScreen">
+      <section id="quizScreen" hidden>
         <div class="counter"><span id="current">1</span> / <span id="total">0</span></div>
         <div class="card">
           <div id="word" class="word">アイゼン</div>
@@ -39,6 +61,7 @@
           <p id="resultText"></p>
           <button id="retryBtn" class="primary">もう一度挑戦</button>
           <button id="reviewBtn" class="secondary">間違えた問題を復習</button>
+          <button id="homeBtn" class="text-btn home-link">ホームへ戻る</button>
         </div>
       </section>
     </main>
