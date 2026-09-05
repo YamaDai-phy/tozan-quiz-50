@@ -13,6 +13,16 @@ const shuffle = (items) => [...items].sort(() => Math.random() - 0.5);
 const HISTORY_KEY = "tozan-quiz-history";
 const WEAK_WORDS_KEY = "tozan-quiz-weak-words";
 
+function fitWordOnOneLine() {
+  const word = $("word");
+  word.style.fontSize = "";
+  let size = parseFloat(getComputedStyle(word).fontSize);
+  while (word.scrollWidth > word.clientWidth && size > 6) {
+    size -= 1;
+    word.style.fontSize = `${size}px`;
+  }
+}
+
 function showHome() {
   $("homeScreen").hidden = false;
   $("topbar").hidden = true;
@@ -51,6 +61,7 @@ function render() {
   $("progress").style.width =
     `${((state.index + 1) / state.questions.length) * 100}%`;
   $("word").textContent = q.word;
+  requestAnimationFrame(fitWordOnOneLine);
   $("bookmark").textContent = state.bookmarks.has(q.word) ? "★" : "☆";
   $("bookmark").classList.toggle("active", state.bookmarks.has(q.word));
   const choices = $("choices");
@@ -205,4 +216,5 @@ $("clearHistoryBtn").onclick = () => {
   localStorage.removeItem(HISTORY_KEY);
   renderHistory();
 };
+window.addEventListener("resize", fitWordOnOneLine);
 showHome();
