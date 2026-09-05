@@ -11,6 +11,7 @@ const state = {
 const $ = (id) => document.getElementById(id);
 const shuffle = (items) => [...items].sort(() => Math.random() - 0.5);
 const HISTORY_KEY = "tozan-quiz-history";
+const WEAK_WORDS_KEY = "tozan-quiz-weak-words";
 
 function showHome() {
   $("homeScreen").hidden = false;
@@ -18,6 +19,7 @@ function showHome() {
   $("quizScreen").hidden = true;
   $("resultScreen").hidden = true;
   renderHistory();
+  renderWeakStart();
 }
 
 function start(courseCount, source = QUESTIONS) {
@@ -73,8 +75,13 @@ function answer(selected) {
     if (i === q.answerIndex) button.classList.add("correct");
     if (i === selected && i !== q.answerIndex) button.classList.add("wrong");
   });
-  if (selected === q.answerIndex) state.score++;
-  else state.wrong.push(q);
+  if (selected === q.answerIndex) {
+    state.score++;
+    removeWeakWord(q.word);
+  } else {
+    state.wrong.push(q);
+    addWeakWord(q.word);
+  }
   setTimeout(
     () => {
       state.index++;
@@ -90,6 +97,33 @@ function getHistory() {
   } catch {
     return [];
   }
+}
+
+function getWeakWords() {
+  try {
+    return JSON.parse(localStorage.getItem(WEAK_WORDS_KEY)) || [];
+  } catch {
+    return [];
+  }
+}
+
+function addWeakWord(word) {
+  const words = new Set(getWeakWords());
+  words.add(word);
+  localStorage.setItem(WEAK_WORDS_KEY, JSON.stringify([...words]));
+}
+
+function removeWeakWord(word) {
+  localStorage.setItem(
+    WEAK_WORDS_KEY,
+    JSON.stringify(getWeakWords().filter((item) => item !== word)),
+  );
+}
+
+function renderWeakStart() {
+  const weakCount = getWeakWords().length;
+  $("weakStartBtn").disabled = weakCount === 0;
+  $("weakStartBtn").textContent = `苦手問題を復習（${weakCount}問）`;
 }
 
 function saveResult() {
@@ -150,6 +184,11 @@ document.querySelectorAll(".course").forEach(
     }),
 );
 $("startBtn").onclick = () => start(state.selectedCourse);
+$("weakStartBtn").onclick = () => {
+  const weakWords = new Set(getWeakWords());
+  const weakQuestions = QUESTIONS.filter((question) => weakWords.has(question.word));
+  if (weakQuestions.length) start(weakQuestions.length, weakQuestions);
+};
 $("bookmark").onclick = () => {
   const word = state.questions[state.index].word;
   state.bookmarks.has(word)
