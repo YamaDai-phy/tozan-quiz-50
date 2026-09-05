@@ -93,7 +93,7 @@ function startTimer() {
     if (state.answered) return;
     const remaining = Math.max(0, duration - (now - startedAt));
     $("progress").style.width = `${(remaining / duration) * 100}%`;
-    $("timerLabel").textContent = `残り${Math.ceil(remaining / 1000)}秒`;
+    $("timerLabel").textContent = ``;
     if (remaining === 0) answer(-1);
     else state.timerFrame = requestAnimationFrame(tick);
   };
